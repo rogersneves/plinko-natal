@@ -264,7 +264,7 @@ pins.forEach((p) => {
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist<=IN_RADIUS + GIFT_RADIUS) {
             const dir = Math.random() < 0.5 ? -1 : 1;
-            gift.vx = (Math.abs(gift.vx) * 0.7 + 2 * dir); // Rebota com média de ve)locidade
+            gift.vx = (Math.abs(gift.vx) * 0.7 + 2 * dir); // Rebota com média de velocidade
             gift.vy *= 0.7; // Amortecimento na colisão          }
       });
     
