@@ -240,7 +240,12 @@ function animate() {
     // Física realista com gravidade melhorada
     gift.vy += GRAVITY; // Usa gravidade const
     gift.y += gift.vy;
+        // Limita velocidade máxima (terminal velocity)
+    const MAX_VY = 8;
+    if (gift.vy > MAX_VY) gift.vy = MAX_VY;
     gift.x += gift.vx;
+        // Resistência do ar - reduz velocidade horizontal
+    gift.vx *= 0.98;
     
     if (gift.x < GIFT_RADIUS) {
       gift.x = GIFT_RADIUS;
@@ -257,10 +262,8 @@ function animate() {
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < PIN_RADIUS + GIFT_RADIUS) {
         const dir = Math.random() < 0.5 ? -1 : 1;
-        gift.vx = (Math.abs(gift.vx) + 0.5) * dir; // Reduzido impulso
-        gift.vy *= 0.6;
-        gift.y += 4;
-      }
+gift.vx = (Math.abs(gift.vx) * 0.7 + 0.5) * dir; // Rebota com média de velocidade        g
+gift.vy *= 0.85; // Amortecimento na colisão      }
     });
     
     if (gift.y >= BOARD_HEIGHT - 80) {
