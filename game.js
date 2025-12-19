@@ -1,5 +1,6 @@
 const SLOT_VALUES = [120, 60, 30, '+1', 10, '+1', 30, 60, 120];
-const BOARD_WIDTH = 400;  
+const BOARD_WIDTH = 400;      
+
 
 const BOARD_HEIGHT = 500;
 const PIN_RADIUS = 4;
@@ -261,9 +262,9 @@ pins.forEach((p) => {
       const dx = gift.x - p.x;
       const dy = gift.y - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist <=PIN_RADIUS + GIFT_RADIUS) {
+      if (dist  =PIN_RADIUS + GIFT_RADIUS) {
                     const dir = Math.random() < 0.5 ? -1 : 1;
-            gift.vx = (Math.abs(gift.vx) * 0.7 + 02 * dir; // Rebota com média de velocidade
+            gift.vx = (Math.abs(gift.vx) * 0.7 + 2 * dir; // Rebota com média de ve)locidade
 gift.vy *= 0.7; // Amortecimento na colisão          }
           });
     
