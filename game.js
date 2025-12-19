@@ -1,7 +1,5 @@
 const SLOT_VALUES = [120, 60, 30, '+1', 10, '+1', 30, 60, 120];
-const BOARD_WIDTH = 400;      
-
-
+const BOARD_WIDTH = 400;
 const BOARD_HEIGHT = 500;
 const PIN_RADIUS = 4;
 const GIFT_RADIUS = 16; // Dobrado de 8 para 16
@@ -25,7 +23,9 @@ function initPins() {
   const cols = 8;
   const spacingX = BOARD_WIDTH / (cols + 1);
   const spacingY = 50;
+
   pins = [];
+
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       const offset = row % 2 === 0 ? spacingX / 2 : 0;
@@ -59,10 +59,12 @@ function updateHighScoreDisplay() {
 function startGame() {
   const nameInput = document.getElementById('nameInput');
   if (!nameInput.value.trim()) return;
+
   playerName = nameInput.value.trim();
   currentScore = 0;
   giftsLeft = 5;
   updateUI();
+
   document.getElementById('namePromptDiv').style.display = 'none';
   document.getElementById('infoBarDiv').style.display = 'flex';
   hideRestartBtn();
@@ -81,15 +83,18 @@ function updateUI() {
   document.getElementById('playerNameSpan').textContent = playerName;
   document.getElementById('currentScoreSpan').textContent = currentScore;
   document.getElementById('giftsCounter').textContent = giftsLeft;
+
   const dropBtn = document.getElementById('dropBtn');
   dropBtn.disabled = isDropping || giftsLeft <= 0;
 }
 
 function dropGift() {
   if (!playerName || isDropping || giftsLeft <= 0) return;
+
   isDropping = true;
   giftsLeft--;
   updateUI();
+
   const startX = BOARD_WIDTH / 2;
   gift = {
     x: startX,
@@ -103,8 +108,10 @@ function dropGift() {
 function detectSlot(x) {
   const slotWidth = BOARD_WIDTH / SLOT_VALUES.length;
   let idx = Math.floor(x / slotWidth);
+
   if (idx < 0) idx = 0;
   if (idx >= SLOT_VALUES.length) idx = SLOT_VALUES.length - 1;
+
   return idx;
 }
 
@@ -113,13 +120,14 @@ function startSlotFlash(slotValue, slotIndex) {
   const x = (slotIndex + 0.5) * slotWidth;
   const y = BOARD_HEIGHT / 2 - 30; // Ajustado para centralizar melhor
   const displayVal = typeof slotValue === 'number' ? slotValue : '+1';
+
   flashText = {
     text: displayVal,
     x: x,
     y: y,
     time: 0,
     frames: 8,
-    interval: 150
+    interval: 150,
   };
 }
 
@@ -162,13 +170,17 @@ function drawBoard() {
   }
 
   const slotWidth = BOARD_WIDTH / SLOT_VALUES.length;
+
   SLOT_VALUES.forEach((val, idx) => {
     const x = idx * slotWidth;
     const chimneyHeight = 70;
+
     ctx.fillStyle = '#5d2d1a';
     ctx.fillRect(x + 6, BOARD_HEIGHT - chimneyHeight, slotWidth - 12, chimneyHeight);
+
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(x + 2, BOARD_HEIGHT - chimneyHeight - 8, slotWidth - 4, 10);
+
     ctx.fillStyle = val === '+1' ? '#00ff88' : '#ffd700';
     ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'center';
@@ -186,10 +198,12 @@ function drawBoard() {
 
 function drawGift() {
   if (!gift) return;
+
   ctx.beginPath();
   ctx.fillStyle = '#ff1744';
   ctx.arc(gift.x, gift.y, GIFT_RADIUS, 0, Math.PI * 2);
   ctx.fill();
+
   ctx.strokeStyle = '#ffd700';
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -198,6 +212,7 @@ function drawGift() {
   ctx.moveTo(gift.x, gift.y - GIFT_RADIUS);
   ctx.lineTo(gift.x, gift.y + GIFT_RADIUS);
   ctx.stroke();
+
   ctx.beginPath();
   ctx.strokeStyle = 'rgba(255,255,255,0.7)';
   ctx.arc(gift.x - 3, gift.y - 3, 3, 0, Math.PI * 2);
@@ -206,21 +221,25 @@ function drawGift() {
 
 function drawFlashText() {
   if (!flashText) return;
+
   const elapsed = flashText.time;
   const frameIndex = Math.floor((elapsed / flashText.interval) % flashText.frames);
   const isVisible = frameIndex % 2 === 0;
-  
+
   if (isVisible) {
     ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
     ctx.font = 'bold 80px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+
     // Adiciona sombra para melhor visível
     ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
     ctx.shadowBlur = 10;
     ctx.shadowOffsetX = 2;
     ctx.shadowOffsetY = 2;
+
     ctx.fillText(flashText.text, flashText.x, flashText.y);
+
     ctx.shadowColor = 'transparent';
   }
 }
@@ -228,7 +247,7 @@ function drawFlashText() {
 function animate() {
   const now = performance.now();
   drawBoard();
-  
+
   // Atualiza tempo do flash
   if (flashText) {
     if (!flashText.startTime) flashText.startTime = now;
@@ -242,13 +261,16 @@ function animate() {
     // Física realista com gravidade melhorada
     gift.vy += GRAVITY; // Usa gravidade const
     gift.y += gift.vy;
-        // Limita velocidade máxima (terminal velocity)
+
+    // Limita velocidade máxima (terminal velocity)
     const MAX_VY = 8;
     if (gift.vy > MAX_VY) gift.vy = MAX_VY;
+
     gift.x += gift.vx;
-        // Resistência do ar - reduz velocidade horizontal
+
+    // Resistência do ar - reduz velocidade horizontal
     gift.vx *= 0.98;
-    
+
     if (gift.x < GIFT_RADIUS) {
       gift.x = GIFT_RADIUS;
       gift.vx *= -0.7;
@@ -257,32 +279,37 @@ function animate() {
       gift.x = BOARD_WIDTH - GIFT_RADIUS;
       gift.vx *= -0.7;
     }
-    
-pins.forEach((p) => {
+
+    pins.forEach((p) => {
       const dx = gift.x - p.x;
       const dy = gift.y - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist<=PIN_RADIUS + GIFT_RADIUS) {
-            const dir = Math.random() < 0.5 ? -1 : 1;
-            gift.vx = (Math.abs(gift.vx) * 0.7 + 2 * dir); // Rebota com média de velocidade
-            gift.vy *= 0.7; // Amortecimento na colisão          }
-      };
-    
+      if (dist <= PIN_RADIUS + GIFT_RADIUS) {
+        const dir = Math.random() < 0.5 ? -1 : 1;
+        // Rebota com média de velocidade
+        gift.vx = (Math.abs(gift.vx) * 0.7 + 2) * dir;
+        gift.vy *= 0.7; // Amortecimento na colisão
+      }
+    });
+
     if (gift.y >= BOARD_HEIGHT - 80) {
       gift.active = false;
       isDropping = false;
+
       const slotIndex = detectSlot(gift.x);
       const slotVal = SLOT_VALUES[slotIndex];
-      
+
       // Inicia o efeito de pisca
       startSlotFlash(slotVal, slotIndex);
-      
+
       if (typeof slotVal === 'number') {
         currentScore += slotVal;
       } else if (slotVal === '+1') {
         giftsLeft++;
       }
+
       updateUI();
+
       setTimeout(() => {
         if (giftsLeft === 0) {
           showRestartBtn();
@@ -294,12 +321,13 @@ pins.forEach((p) => {
         }
       }, 400);
     }
+
     drawGift();
   }
-  
+
   // Desenha o texto de pisca
   drawFlashText();
-  
+
   if (playerName && (giftsLeft > 0 || gift)) {
     animationFrameId = requestAnimationFrame(animate);
   }
@@ -313,6 +341,7 @@ function resetForNextPlayer() {
   isDropping = false;
   gift = null;
   flashText = null;
+
   document.getElementById('nameInput').value = '';
   document.getElementById('namePromptDiv').style.display = 'flex';
   document.getElementById('infoBarDiv').style.display = 'none';
