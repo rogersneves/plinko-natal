@@ -2,7 +2,7 @@ const SLOT_VALUES = [120, 60, 30, '+1', 10, '+1', 30, 60, 120];
 const BOARD_WIDTH = 400;
 const BOARD_HEIGHT = 500;
 const PIN_RADIUS = 4;
-const GIFT_RADIUS = 8; // Dobrado de 8 para 16
+const GIFT_RADIUS = 11; // Tamanho original 8
 const GRAVITY = 0.15; // Gravidade realista
 
 let playerName = '';
