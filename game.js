@@ -2,7 +2,8 @@ const SLOT_VALUES = [120, 60, 30, '+1', 10, '+1', 30, 60, 120];
 const BOARD_WIDTH = 400;
 const BOARD_HEIGHT = 500;
 const PIN_RADIUS = 4;
-const GIFT_RADIUS = 8;
+const GIFT_RADIUS = 16; // Dobrado de 8 para 16
+const GRAVITY = 0.15; // Gravidade realista
 
 let playerName = '';
 let giftsLeft = 5;
@@ -91,8 +92,8 @@ function dropGift() {
   gift = {
     x: startX,
     y: 40,
-    vx: (Math.random() - 0.5) * 2,
-    vy: 2,
+    vx: (Math.random() - 0.5) * 1.5, // Reduzido de 2 para 1.5
+    vy: 0.5, // Reduzido de 2 para 0.5
     active: true,
   };
 }
@@ -108,15 +109,15 @@ function detectSlot(x) {
 function startSlotFlash(slotValue, slotIndex) {
   const slotWidth = BOARD_WIDTH / SLOT_VALUES.length;
   const x = (slotIndex + 0.5) * slotWidth;
-  const y = BOARD_HEIGHT / 2;
+  const y = BOARD_HEIGHT / 2 - 30; // Ajustado para centralizar melhor
   const displayVal = typeof slotValue === 'number' ? slotValue : '+1';
   flashText = {
     text: displayVal,
     x: x,
     y: y,
     time: 0,
-    frames: 8, // 4 piscadas (on-off-on-off-on-off-on-off)
-    interval: 150 // ms
+    frames: 8,
+    interval: 150
   };
 }
 
@@ -205,14 +206,20 @@ function drawFlashText() {
   if (!flashText) return;
   const elapsed = flashText.time;
   const frameIndex = Math.floor((elapsed / flashText.interval) % flashText.frames);
-  const isVisible = frameIndex % 2 === 0; // Alterna entre visível e invisível
+  const isVisible = frameIndex % 2 === 0;
   
   if (isVisible) {
     ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
     ctx.font = 'bold 80px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    // Adiciona sombra para melhor visível
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+    ctx.shadowBlur = 10;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
     ctx.fillText(flashText.text, flashText.x, flashText.y);
+    ctx.shadowColor = 'transparent';
   }
 }
 
@@ -230,9 +237,11 @@ function animate() {
   }
 
   if (gift && gift.active) {
-    gift.vy += 0.3;
+    // Física realista com gravidade melhorada
+    gift.vy += GRAVITY; // Usa gravidade const
     gift.y += gift.vy;
     gift.x += gift.vx;
+    
     if (gift.x < GIFT_RADIUS) {
       gift.x = GIFT_RADIUS;
       gift.vx *= -0.7;
@@ -241,17 +250,19 @@ function animate() {
       gift.x = BOARD_WIDTH - GIFT_RADIUS;
       gift.vx *= -0.7;
     }
+    
     pins.forEach((p) => {
       const dx = gift.x - p.x;
       const dy = gift.y - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < PIN_RADIUS + GIFT_RADIUS) {
         const dir = Math.random() < 0.5 ? -1 : 1;
-        gift.vx = (Math.abs(gift.vx) + 1) * dir;
+        gift.vx = (Math.abs(gift.vx) + 0.5) * dir; // Reduzido impulso
         gift.vy *= 0.6;
         gift.y += 4;
       }
     });
+    
     if (gift.y >= BOARD_HEIGHT - 80) {
       gift.active = false;
       isDropping = false;
