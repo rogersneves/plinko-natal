@@ -261,10 +261,10 @@ function animate() {
       const dy = gift.y - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
       if (dist < PIN_RADIUS + GIFT_RADIUS) {
-        const dir = Math.random() < 0.5 ? -1 : 1;
-gift.vx = (Math.abs(gift.vx) * 0.7 + 0.5) * dir; // Rebota com média de velocidade        g
-gift.vy *= 0.85; // Amortecimento na colisão      }
-    });
+                    const dir = Math.random() < 0.5 ? -1 : 1;
+            gift.vx = (Math.abs(gift.vx) * 0.7 + 0.5) * dir; // Rebota com média de velocidade
+            gift.vy *= 0.85; // Amortecimento na colisão
+          }
     
     if (gift.y >= BOARD_HEIGHT - 80) {
       gift.active = false;
