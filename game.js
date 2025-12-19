@@ -266,7 +266,7 @@ pins.forEach((p) => {
             const dir = Math.random() < 0.5 ? -1 : 1;
             gift.vx = (Math.abs(gift.vx) * 0.7 + 2 * dir); // Rebota com média de velocidade
             gift.vy *= 0.7; // Amortecimento na colisão          }
-      });
+      };
     
     if (gift.y >= BOARD_HEIGHT - 80) {
       gift.active = false;
