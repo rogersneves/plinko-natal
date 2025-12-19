@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Plinko de Natal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: radial-gradient(circle at top, #1b2440, #050610);
+            color: #f5f5f5;
+        }
+
+        .appRoot {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gameContainer {
+            max-width: 900px;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .gameHeader {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .titleArea h1 {
+            margin: 0;
+            color: #ffeb3b;
+            text-shadow: 0 0 10px rgba(255, 235, 59, 0.8);
+        }
+
+        .titleArea p {
+            margin: 4px 0 0;
+            font-size: 14px;
+        }
+
+        .scoreArea {
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .highScore strong,
+        .giftsLeft strong {
+            color: #ffeb3b;
+        }
+
+        .namePrompt {
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .namePrompt input {
+            margin-left: 6px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .namePrompt button {
+            padding: 6px 14px;
+            border-radius: 4px;
+            border: none;
+            background: #d32f2f;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .namePrompt button:hover {
+            background: #f44336;
+        }
+
+        .infoBar {
+            margin: 15px 0;
+            padding: 8px 10px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 14px;
+        }
+
+        .infoBar button {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: none;
+            background: #388e3c;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .infoBar button[disabled] {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .infoBar button:hover:not([disabled]) {
+            background: #43a047;
+        }
+
+        .boardWrapper {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 5px;
+        }
+
+        canvas {
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .footerText {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 8px;
+            color: #cfd8dc;
+        }
+    </style>
+</head>
+<body>
+    <div id="root" class="appRoot">
+        <div class="gameContainer">
+            <header class="gameHeader">
+                <div class="titleArea">
+                    <h1>🎄 Plinko de Natal 🎁</h1>
+                    <p>Clique para soltar presentes e disputar a maior pontuação!</p>
+                </div>
+                <div class="scoreArea">
+                    <div class="highScore">
+                        Maior pontuação: <strong id="highScoreName">-</strong> - <strong id="highScorePoints">0</strong>
+                    </div>
+                    <div class="giftsLeft">
+                        Presentes: <strong id="giftsCounter">5</strong>
+                    </div>
+                </div>
+            </header>
+
+            <div id="namePromptDiv" class="namePrompt">
+                <label>
+                    Seu nome:
+                    <input type="text" id="nameInput" placeholder="Digite seu nome" />
+                </label>
+                <button id="startBtn" onclick="startGame()">Começar</button>
+            </div>
+
+            <div id="infoBarDiv" class="infoBar" style="display:none;">
+                <div>Jogador: <strong id="playerNameSpan">-</strong></div>
+                <div>Pontuação atual: <strong id="currentScoreSpan">0</strong></div>
+                <button id="dropBtn" onclick="dropGift()">Soltar presente 🎁</button>
+                <button onclick="resetForNextPlayer()">Novo jogador</button>
+            </div>
+
+            <div class="boardWrapper">
+                <canvas id="gameCanvas" width="400" height="500"></canvas>
+            </div>
+
+            <footer class="footerText">
+                Feliz Natal e boas disputas entre os colegas! 🎅✨
+            </footer>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
