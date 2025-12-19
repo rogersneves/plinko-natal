@@ -256,8 +256,7 @@ function animate() {
       gift.vx *= -0.7;
     }
     
-    pins.267
-      ((p) => {
+pins.forEach((p) => {
       const dx = gift.x - p.x;
       const dy = gift.y - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
