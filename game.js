@@ -256,7 +256,8 @@ function animate() {
       gift.vx *= -0.7;
     }
     
-    pins.forEach((p) => {
+    pins.267
+      ((p) => {
       const dx = gift.x - p.x;
       const dy = gift.y - p.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
@@ -265,6 +266,7 @@ function animate() {
             gift.vx = (Math.abs(gift.vx) * 0.7 + 0.5) * dir; // Rebota com média de velocidade
             gift.vy *= 0.85; // Amortecimento na colisão
           }
+          });
     
     if (gift.y >= BOARD_HEIGHT - 80) {
       gift.active = false;
