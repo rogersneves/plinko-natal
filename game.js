@@ -12,6 +12,7 @@ let isDropping = false;
 let pins = [];
 let gift = null;
 let animationFrameId = null;
+let flashText = null; // { text, x, y, time, frames }
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -61,6 +62,15 @@ function startGame() {
   updateUI();
   document.getElementById('namePromptDiv').style.display = 'none';
   document.getElementById('infoBarDiv').style.display = 'flex';
+  hideRestartBtn();
+  animate();
+}
+
+function restartGame() {
+  currentScore = 0;
+  giftsLeft = 5;
+  updateUI();
+  hideRestartBtn();
   animate();
 }
 
@@ -93,6 +103,43 @@ function detectSlot(x) {
   if (idx < 0) idx = 0;
   if (idx >= SLOT_VALUES.length) idx = SLOT_VALUES.length - 1;
   return idx;
+}
+
+function startSlotFlash(slotValue, slotIndex) {
+  const slotWidth = BOARD_WIDTH / SLOT_VALUES.length;
+  const x = (slotIndex + 0.5) * slotWidth;
+  const y = BOARD_HEIGHT / 2;
+  const displayVal = typeof slotValue === 'number' ? slotValue : '+1';
+  flashText = {
+    text: displayVal,
+    x: x,
+    y: y,
+    time: 0,
+    frames: 8, // 4 piscadas (on-off-on-off-on-off-on-off)
+    interval: 150 // ms
+  };
+}
+
+function showRestartBtn() {
+  const infoBar = document.getElementById('infoBarDiv');
+  if (!document.getElementById('restartBtn')) {
+    const restartBtn = document.createElement('button');
+    restartBtn.id = 'restartBtn';
+    restartBtn.onclick = restartGame;
+    restartBtn.style.backgroundColor = '#d32f2f';
+    restartBtn.style.color = '#fff';
+    restartBtn.style.padding = '6px 12px';
+    restartBtn.style.borderRadius = '4px';
+    restartBtn.style.border = 'none';
+    restartBtn.style.cursor = 'pointer';
+    restartBtn.textContent = 'Recomeçar';
+    infoBar.appendChild(restartBtn);
+  }
+}
+
+function hideRestartBtn() {
+  const restartBtn = document.getElementById('restartBtn');
+  if (restartBtn) restartBtn.remove();
 }
 
 function drawBoard() {
@@ -154,8 +201,34 @@ function drawGift() {
   ctx.stroke();
 }
 
+function drawFlashText() {
+  if (!flashText) return;
+  const elapsed = flashText.time;
+  const frameIndex = Math.floor((elapsed / flashText.interval) % flashText.frames);
+  const isVisible = frameIndex % 2 === 0; // Alterna entre visível e invisível
+  
+  if (isVisible) {
+    ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
+    ctx.font = 'bold 80px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(flashText.text, flashText.x, flashText.y);
+  }
+}
+
 function animate() {
+  const now = performance.now();
   drawBoard();
+  
+  // Atualiza tempo do flash
+  if (flashText) {
+    if (!flashText.startTime) flashText.startTime = now;
+    flashText.time = now - flashText.startTime;
+    if (flashText.time > flashText.frames * flashText.interval) {
+      flashText = null;
+    }
+  }
+
   if (gift && gift.active) {
     gift.vy += 0.3;
     gift.y += gift.vy;
@@ -184,6 +257,10 @@ function animate() {
       isDropping = false;
       const slotIndex = detectSlot(gift.x);
       const slotVal = SLOT_VALUES[slotIndex];
+      
+      // Inicia o efeito de pisca
+      startSlotFlash(slotVal, slotIndex);
+      
       if (typeof slotVal === 'number') {
         currentScore += slotVal;
       } else if (slotVal === '+1') {
@@ -192,6 +269,7 @@ function animate() {
       updateUI();
       setTimeout(() => {
         if (giftsLeft === 0) {
+          showRestartBtn();
           if (currentScore > highScore.score && playerName) {
             highScore = { name: playerName, score: currentScore };
             localStorage.setItem('plinkoNatalHighScore', JSON.stringify(highScore));
@@ -202,6 +280,10 @@ function animate() {
     }
     drawGift();
   }
+  
+  // Desenha o texto de pisca
+  drawFlashText();
+  
   if (playerName && (giftsLeft > 0 || gift)) {
     animationFrameId = requestAnimationFrame(animate);
   }
@@ -214,9 +296,11 @@ function resetForNextPlayer() {
   playerName = '';
   isDropping = false;
   gift = null;
+  flashText = null;
   document.getElementById('nameInput').value = '';
   document.getElementById('namePromptDiv').style.display = 'flex';
   document.getElementById('infoBarDiv').style.display = 'none';
+  hideRestartBtn();
   drawBoard();
 }
 
